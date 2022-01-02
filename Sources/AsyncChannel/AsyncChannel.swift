@@ -1,12 +1,14 @@
 import Foundation
 
-final class AsyncChannel<T> {
+public final class AsyncChannel<T> {
     private let buffer = Buffer()
+
+    public init() {}
 
     /// Get the value asyncronously.
     /// This returns the value immediatly if already available,
     /// or will await until it's received.
-    var value: T {
+    public var value: T {
         get async throws {
             let id = UUID()
             return try await withTaskCancellationHandler(operation: {
@@ -29,14 +31,14 @@ final class AsyncChannel<T> {
     /// This will send the value to every method that is awaiting to get it.
     /// It will also cache it internally so any subsequent `get` receives it immediatly.
     /// - Note: Only 1 value should be provided.
-    func send(_ v: T) {
+    public func send(_ v: T) {
         Task {
             await buffer.send(v)
         }
     }
 
     /// Removes every awaiting method and stops sending any values.
-    func cancel() {
+    public func cancel() {
         Task {
             await buffer.cancel()
         }
